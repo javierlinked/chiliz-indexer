@@ -1,0 +1,41 @@
+Arguments: 
+  /Users/javier/.nvm/versions/node/v16.16.0/bin/node /Users/javier/.nvm/versions/node/v16.16.0/bin/yarn add ethers dotnev
+
+PATH: 
+  /usr/local/sbin:./node_modules/.bin:/Users/javier/.nvm/versions/node/v16.16.0/bin:/usr/local/bin:/usr/local/sbin:/Users/javier/.nvm/versions/node/v16.16.0/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Frameworks/Mono.framework/Versions/Current/Commands
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  16.16.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/dotnev: Not found
+      at Request.params.callback [as _callback] (/Users/javier/.nvm/versions/node/v16.16.0/lib/node_modules/yarn/lib/cli.js:66145:18)
+      at Request.self.callback (/Users/javier/.nvm/versions/node/v16.16.0/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:527:28)
+      at Request.<anonymous> (/Users/javier/.nvm/versions/node/v16.16.0/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:527:28)
+      at IncomingMessage.<anonymous> (/Users/javier/.nvm/versions/node/v16.16.0/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:641:28)
+      at IncomingMessage.emit (node:events:539:35)
+      at endReadableNT (node:internal/streams/readable:1345:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
+
+npm manifest: 
+  {
+    "name": "chiliz-indexer",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
