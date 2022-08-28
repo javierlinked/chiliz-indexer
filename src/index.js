@@ -1,10 +1,10 @@
 
-const ethers = require("ethers");
+import { providers, Contract, constants, utils } from "ethers";
 require("dotenv").config();
-const abi = require("./chz.json");
+import abi from "./chz.json";
 const address = "0x3506424f91fd33084466f402d5d97f05f8e3b4af";
 
-const provider = new ethers.providers.WebSocketProvider(`wss://mainnet.infura.io/ws/v3/${process.env.INFURA_KEY}`);
+const provider = new providers.WebSocketProvider(`wss://mainnet.infura.io/ws/v3/${process.env.INFURA_KEY}`);
 
 
 // event Transfer(
@@ -20,13 +20,13 @@ const provider = new ethers.providers.WebSocketProvider(`wss://mainnet.infura.io
 async function main() {
 
     // The Contract object
-    const contract = new ethers.Contract(address, abi, provider);
+    const contract = new Contract(address, abi, provider);
 
-    let accumulated = ethers.constants.Zero;
+    let accumulated = constants.Zero;
     contract.on('Transfer', (from, to, value, event) => {
         // native method from BigNumber
         const sum = accumulated.add(value);
-        console.log(`${from} -> ${to} ${ethers.utils.formatUnits(value, 'ether')} ${ethers.utils.formatUnits(sum, 'ether')}`);
+        console.log(`${from} -> ${to} ${utils.formatUnits(value, 'ether')} ${utils.formatUnits(sum, 'ether')}`);
         // console.log(from, to, ethers.utils.formatUnits(value, 'ether'));
         accumulated = sum;
     });
@@ -36,7 +36,7 @@ async function main() {
 async function main2() {
     // The Contract object
     // const contract = new ethers.Contract(address, abi, provider);
-    const iface = new ethers.utils.Interface(abi);
+    const iface = new utils.Interface(abi);
     
     let chztx = "0xfa83f01b292bcd3d407e04ad438aed5df405f05183e59f62e079f435d77faa79";
     let otra = "0x55ff648e48418f1391d812d66ad92f93efdea87bf71c36b5e7f9a03615d8278c";
