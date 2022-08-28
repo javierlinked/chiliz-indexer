@@ -1,7 +1,6 @@
 import { BigNumber, constants, Contract, providers, utils } from 'ethers';
+import { stats } from '.';
 import abi from './chz.json';
-import { stats } from './types';
-
 export class Gateway {
 
   public static address = '0x3506424f91fd33084466f402d5d97f05f8e3b4af';

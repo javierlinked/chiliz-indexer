@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import { Gateway } from './gateway';
+import { Gateway } from '.';
 
-const app = express();
+export const app = express();
 const gateway = new Gateway();
 
 app.get('/', (req: Request, res: Response) => {
@@ -16,5 +16,3 @@ app.get('/transaction/:id', async (req: Request, res: Response) => {
   const id = req.params.id;
   res.send({ tx: id, isCHZ: await gateway.isCHZTransaction(id) } );
 });
-
-export default app;
