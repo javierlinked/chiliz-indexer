@@ -3,8 +3,7 @@ import { stats } from '.';
 import abi from './chz.json';
 export class Gateway {
 
-  public static address = '0x3506424f91fd33084466f402d5d97f05f8e3b4af';
-
+  address = '0x3506424f91fd33084466f402d5d97f05f8e3b4af';
   transactionCounter: number;;
   startTime: number;
   accumulator: BigNumber; 
@@ -20,9 +19,13 @@ export class Gateway {
     this.handleEvents();
   }
 
+  /**
+   * Handle 'Transfer' events from the blockchain
+   * whilst application is running.
+   */
   protected handleEvents(): void {
     // The Contract object
-    const contract = new Contract(Gateway.address, abi, this.provider);
+    const contract = new Contract(this.address, abi, this.provider);
 
     contract.on('Transfer', (from: string, to: string, value: BigNumber) => {
 
@@ -37,6 +40,11 @@ export class Gateway {
     });
   }
 
+  /**
+   * Get stats about CHZ transactions.
+   * @returns {stats}
+   * @memberof Gateway
+   **/
   getTotals(): stats {
     const result = {
       startTime: this.startTime,
@@ -47,21 +55,28 @@ export class Gateway {
     return result;
   }
 
+  /**
+   * Check if a transaction is a CHZ transaction.
+   * @param {string} id - transaction id
+   * @returns {Promise<boolean>}
+   * @memberof Gateway
+   **/ 
   async isCHZTransaction(id: string): Promise<boolean> {
     let tx;
     try {
-      tx = await this.provider.getTransaction(id);
+      tx = await this.provider.getTransactionReceipt(id);
     } catch (error) {
       return false;
     }
     return this.operationBelongsToCHZ(tx);
   }
 
-  protected operationBelongsToCHZ(tx: providers.TransactionResponse): boolean {
-    const cleanAddress = Gateway.address.toLowerCase().substring(2);
-    return tx.to?.toLocaleLowerCase() === Gateway.address.toLocaleLowerCase() || 
-        tx.from.toLocaleLowerCase() === Gateway.address.toLocaleLowerCase() || 
-        tx.data.includes(cleanAddress);
+  /**
+   * This should cover all CHZ transactions, including those that are not part of the contract, e.g. Uniswap
+   **/
+  protected operationBelongsToCHZ(tx: providers.TransactionReceipt): boolean {
+    const logs = tx.logs.map(log => log.address.toLocaleLowerCase());
+    return logs.includes(this.address.toLocaleLowerCase());
   }
 }
 
