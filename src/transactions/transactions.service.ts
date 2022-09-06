@@ -1,12 +1,15 @@
+import { Injectable } from '@nestjs/common';
 import { BigNumber, constants, Contract, providers, utils } from 'ethers';
-import { stats } from '.';
-import abi from './chz.json';
-export class Gateway {
+import { stats } from 'src/types';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const abi = require('../chz.json');
 
+@Injectable()
+export class TransactionsService {
   address = '0x3506424f91fd33084466f402d5d97f05f8e3b4af';
-  transactionCounter: number;;
+  transactionCounter: number;
   startTime: number;
-  accumulator: BigNumber; 
+  accumulator: BigNumber;
   provider: providers.WebSocketProvider;
 
   constructor() {
@@ -14,7 +17,7 @@ export class Gateway {
     this.accumulator = constants.Zero;
     this.transactionCounter = 0;
     this.provider = new providers.WebSocketProvider(
-      `wss://mainnet.infura.io/ws/v3/${process.env.INFURA_KEY}`
+      `wss://mainnet.infura.io/ws/v3/${process.env.INFURA_KEY}`,
     );
     this.handleEvents();
   }
@@ -28,13 +31,15 @@ export class Gateway {
     const contract = new Contract(this.address, abi, this.provider);
 
     contract.on('Transfer', (from: string, to: string, value: BigNumber) => {
-
       this.transactionCounter++;
       // native method from BigNumber
       const sum = this.accumulator.add(value);
-     
+
       console.log(
-        `${from} -> ${to} ${utils.formatUnits(value, 'ether')} CHZ, accum: ${utils.formatUnits(sum, 'ether')} CHZ`
+        `${from} -> ${to} ${utils.formatUnits(
+          value,
+          'ether',
+        )} CHZ, accum: ${utils.formatUnits(sum, 'ether')} CHZ`,
       );
       this.accumulator = sum;
     });
@@ -50,7 +55,8 @@ export class Gateway {
       startTime: this.startTime,
       currentTime: Date.now(),
       totalTransactions: this.transactionCounter,
-      totalCHZTransactions: utils.formatUnits(this.accumulator, 'ether') + ' CHZ',
+      totalCHZTransactions:
+        utils.formatUnits(this.accumulator, 'ether') + ' CHZ',
     };
     return result;
   }
@@ -60,7 +66,7 @@ export class Gateway {
    * @param {string} id - transaction id
    * @returns {Promise<boolean>}
    * @memberof Gateway
-   **/ 
+   **/
   async isCHZTransaction(id: string): Promise<boolean> {
     let tx;
     try {
@@ -75,8 +81,7 @@ export class Gateway {
    * This should cover all CHZ transactions, including those that are not part of the contract, e.g. Uniswap
    **/
   protected operationBelongsToCHZ(tx: providers.TransactionReceipt): boolean {
-    const logs = tx.logs.map(log => log.address.toLocaleLowerCase());
+    const logs = tx.logs.map((log) => log.address.toLocaleLowerCase());
     return logs.includes(this.address.toLocaleLowerCase());
   }
 }
-
