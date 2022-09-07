@@ -13,6 +13,6 @@ export class TransactionsController {
 
   @Get(':id')
   findOne(@Param() params): Promise<boolean> {
-    return this.transactionsService.isCHZTransaction(params.id);
+    return this.transactionsService.isDAITransaction(params.id);
   }
 }
