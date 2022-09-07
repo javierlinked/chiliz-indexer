@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { BigNumber, constants, Contract, providers, utils } from 'ethers';
 import { stats } from 'src/types';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const abi = require('../chz.json');
+
+import * as abi from '../abi.json';
 
 @Injectable()
 export class TransactionsService {
-  address = '0x3506424f91fd33084466f402d5d97f05f8e3b4af';
+  address = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
   transactionCounter: number;
   startTime: number;
   accumulator: BigNumber;
@@ -39,14 +39,14 @@ export class TransactionsService {
         `${from} -> ${to} ${utils.formatUnits(
           value,
           'ether',
-        )} CHZ, accum: ${utils.formatUnits(sum, 'ether')} CHZ`,
+        )} DAI, accum: ${utils.formatUnits(sum, 'ether')} DAI`,
       );
       this.accumulator = sum;
     });
   }
 
   /**
-   * Get stats about CHZ transactions.
+   * Get stats about DAI transactions.
    * @returns {stats}
    * @memberof Gateway
    **/
@@ -55,32 +55,35 @@ export class TransactionsService {
       startTime: this.startTime,
       currentTime: Date.now(),
       totalTransactions: this.transactionCounter,
-      totalCHZTransactions:
-        utils.formatUnits(this.accumulator, 'ether') + ' CHZ',
+      totalDAITransactions:
+        utils.formatUnits(this.accumulator, 'ether') + ' DAI',
     };
     return result;
   }
 
   /**
-   * Check if a transaction is a CHZ transaction.
+   * Check if a transaction is a DAI transaction.
    * @param {string} id - transaction id
    * @returns {Promise<boolean>}
    * @memberof Gateway
    **/
-  async isCHZTransaction(id: string): Promise<boolean> {
+  async isDAITransaction(id: string): Promise<boolean> {
     let tx;
     try {
       tx = await this.provider.getTransactionReceipt(id);
     } catch (error) {
       return false;
     }
-    return this.operationBelongsToCHZ(tx);
+    return this.operationBelongsToDAI(tx);
   }
 
   /**
-   * This should cover all CHZ transactions, including those that are not part of the contract, e.g. Uniswap
+   * This should cover all DAI transactions, including those that are not part of the contract, e.g. Uniswap
    **/
-  protected operationBelongsToCHZ(tx: providers.TransactionReceipt): boolean {
+  protected operationBelongsToDAI(tx?: providers.TransactionReceipt): boolean {
+    if (!tx) {
+      return false; // transaction not found or pending
+    }
     const logs = tx.logs.map((log) => log.address.toLocaleLowerCase());
     return logs.includes(this.address.toLocaleLowerCase());
   }
